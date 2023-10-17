@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace Vvvdev\ClassFromRequest;
 
 use ReflectionMethod;
 
