@@ -1,0 +1,13 @@
+{
+    "name": "vvvdev/class-from-request",
+    "description": "Getting a class from request",
+    "type": "llibrary",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Vvvdev\\ClassFromRequest\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {}
+}
