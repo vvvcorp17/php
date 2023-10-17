@@ -3,7 +3,6 @@
     "description": "Getting a class from request",
     "type": "llibrary",
     "license": "MIT",
-    "version": "2.0.0",
     "autoload": {
         "psr-4": {
             "Vvvdev\\ClassFromRequest\\": "src/"
