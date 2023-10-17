@@ -8,6 +8,6 @@
             "Vvvdev\\ClassFromRequest\\": "src/"
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {}
 }
