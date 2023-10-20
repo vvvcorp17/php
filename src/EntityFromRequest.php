@@ -2,6 +2,7 @@
 
 namespace Vvvdev\ClassFromRequest;
 
+use ReflectionClass;
 use ReflectionMethod;
 
 class EntityFromRequest
@@ -9,11 +10,57 @@ class EntityFromRequest
     private string $class;
     private mixed $entity;
 
-    private function handle(): void
+    /**
+     * @return mixed
+     */
+    public function getEntity(string $class, string $method = ''): mixed
     {
-        // getting all data, GET POST PUT PATCH
-        $inputData = file_get_contents("php://input");
-        parse_str($inputData, $parsedData);
+        $this->class = $class;
+        if ($method === '__construct') {
+            $this->handleByConstruct();
+            return $this->entity;
+        }
+
+        $this->handle();
+
+        return $this->entity;
+    }
+
+    private function getClass(): string
+    {
+        return $this->class;
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    private function handle()
+    {
+        $parsedData = $this->getData();
+
+        $reflectionClass = new ReflectionClass($this->getClass());
+        $parameters = $reflectionClass->getProperties();
+
+        $entity = new ($this->getClass());
+
+        foreach ($parameters as $parameter) {
+            $paramType = $parameter->hasType() ? $parameter->getType()->getName() : 'mixed';
+
+            if (!$parameter->isPublic()) continue;
+
+            if ($paramType == "int") {
+                $parameter->setValue($entity, (int)$parsedData[$parameter->getName()]);
+            } else {
+                $parameter->setValue($entity, $parsedData[$parameter->getName()]);
+            }
+        }
+
+        $this->entity = $entity;
+    }
+
+    private function handleByConstruct(): void
+    {
+        $parsedData = $this->getData();
 
         // getting the class constructor parameters and their types
         $reflectionMethod = new ReflectionMethod($this->getClass(), '__construct');
@@ -33,19 +80,11 @@ class EntityFromRequest
         $this->entity = $entity;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getEntity(string $class): mixed
+    public function getData(): array
     {
-        $this->class = $class;
-        $this->handle();
+        $inputData = file_get_contents("php://input");
+        parse_str($inputData, $parsedData);
 
-        return $this->entity;
-    }
-
-    private function getClass(): string
-    {
-        return $this->class;
+        return $parsedData ?? [];
     }
 }
